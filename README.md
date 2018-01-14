@@ -1,5 +1,6 @@
-# WebSocketR2
+# WebSocketR2 <img align="right" src="images/R2.png"/>
 A Request Response (R2) wrapper for websockets in the browser. 
+
 
 ## Features
 **Callbacks:** Send messages with callbacks. This brings ajax like functionality to websockets.
