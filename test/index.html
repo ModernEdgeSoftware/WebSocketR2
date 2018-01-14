@@ -1,0 +1,47 @@
+<html>
+    <script src="../websocketR2.min.js"></script>
+    <script>
+        var params = {
+            autoReconnect: true,
+            autoReconnectInterval: 1000,
+            requestTimeout: 5000,
+            requestRetryInterval: 5000,
+            requestRetryQueueMaxLength: 1000
+        };
+
+        var ws = new WebSocketR2("ws://localhost:3000", params);
+        
+        ws.onopen(function(){
+            console.log("WebSocket Open!");
+            ws.send("Hello Server");
+            
+            login();
+        });
+        
+        ws.onmessage(function(message){
+            console.log(message);
+        });
+        
+        ws.onclose(function(){
+            console.log("WebSocket Closed!");
+        });
+        
+        ws.onreopen(function(){
+            console.log("WebSocket Reopened!");
+        });
+
+        function login(){
+            var request = {
+                action: "login",
+                params: {
+                    username: "test",
+                    password: "password"
+                }
+            };
+
+            ws.send(request, function(response){
+                console.log(response)
+            });
+        }
+    </script>
+</html>
