@@ -57,11 +57,12 @@ A request with an ID signals to the websocket server that the client would like 
 All values have defaults and are optional. Defaults are shown below.
 ```JavaScript
 var params = {
-  autoReconnect: true                 //Enable/Disable reconnect when the server closes connection (boolean)
-  autoReconnectInterval: 1000         //Milliseconds to wait between reconnect attempts (number)
-  requestTimeout: 30000               //Milliseconds to wait for a response before resending the request (number)
-  requestRetryInterval: 5000          //Milliseconds between request retry checks. This garbage collects the retry queue (number)
-  requestRetryQueueMaxLength: 1000    //Max queue length of retry queue before old messages start getting dropped (number)
+  autoReconnect: true,                 //Enable/Disable reconnect when the server closes connection (boolean)
+  autoReconnectInterval: 1000,         //Milliseconds to wait between reconnect attempts (number)
+  autoReconnectMaxRetries: 600,        //Max number of reconnect attempts to allow (number)
+  requestTimeout: 30000,               //Milliseconds to wait for a response before resending the request (number)
+  requestRetryInterval: 5000,          //Milliseconds between request retry checks. This garbage collects the retry queue (number)
+  requestRetryQueueMaxLength: 1000     //Max queue length of retry queue before old messages start getting dropped (number)
 }
 
 var ws = new WebSocketR2("ws://localhost:3000", params);
