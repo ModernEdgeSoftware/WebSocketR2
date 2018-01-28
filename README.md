@@ -69,4 +69,4 @@ var ws = new WebSocketR2("ws://localhost:3000", params);
 ```
 
 ## Why?
-Because websockets are extremely fast and unlike UDP they are supported in the browser. They just lack some basic structure to make them more useful.
+Because websockets are extremely fast, but unlike UDP they are supported in the browser. They just lack some basic structure to make them more useful.
