@@ -7,22 +7,24 @@
  * 
  * params.autoReconnect                 (Default: true)  This will try to reconnect when the server closes connection
  * params.autoReconnectInterval         (Default: 1000)  This will try the reconnect every second
+ * params.autoReconnectMaxRetries       (Default: 600)   This will try to reconnect for up to 10 minutes
  * params.requestTimeout                (Default: 30000) This will resend a request after 30 seconds
  * params.requestRetryInterval          (Default: 5000)  This will scan the retry queue every 5 seconds for any timed out requests
  * params.requestRetryQueueMaxLength    (Default: 1000)  This will only allow the retry queue to grow to 1000 items in length
  */
 function WebSocketR2(url, params) {
     //Private scoped vars
-    let ws = undefined;
-    let requestIDs = {};
-    let retryQueue = [];
-    let sequence = 0;
-    let initialConnectionEstablished = false;
-    let connected = false;
-    let onOpenCallback = undefined;
-    let onMessageCallback = undefined;
-    let onCloseCallback = undefined;
-    let onReOpenCallback = undefined;
+    var ws = undefined;
+    var requestIDs = {};
+    var retryQueue = [];
+    var retryCount = 0;
+    var sequence = 0;
+    var initialConnectionEstablished = false;
+    var connected = false;
+    var onOpenCallback = undefined;
+    var onMessageCallback = undefined;
+    var onCloseCallback = undefined;
+    var onReOpenCallback = undefined;
 
     //Initialize defaults
     if(params == undefined || params == null){
@@ -35,6 +37,10 @@ function WebSocketR2(url, params) {
 
     if(params.autoReconnectInterval == undefined || params.autoReconnectInterval == null){
         params.autoReconnectInterval = 1000;
+    }
+
+    if(params.autoReconnectMaxRetries == undefined || params.autoReconnectMaxRetries == null){
+        params.autoReconnectMaxRetries = 600;
     }
 
     if(params.requestTimeout == undefined || params.requestTimeout == null){
@@ -118,6 +124,7 @@ function WebSocketR2(url, params) {
     //Event handlers
     function processOnOpen(){
         connected = true;
+        retryCount = 0;
 
         if(!initialConnectionEstablished){
             if(onOpenCallback != undefined){
@@ -184,14 +191,20 @@ function WebSocketR2(url, params) {
     //Timer based functions
     function reconnect(){
         if(!connected && ws.readyState == WebSocket.CLOSED){
+            retryCount++;
             ws = new WebSocket(url);
             registerListeners();
         }
     }
 
     if(params.autoReconnect){
-        setInterval(function(){
-            reconnect();                    
+        var retryInterval = setInterval(function(){
+            if(retryCount < params.autoReconnectMaxRetries){
+                reconnect();   
+            }else{
+                clearInterval(retryInterval);
+                console.info("Max retries exceeded. Re-connection attempts will no longer be made.");
+            }
         }, params.autoReconnectInterval);
     }
 
